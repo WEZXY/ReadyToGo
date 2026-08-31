@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt
 class ReadyToGo(QMainWindow):
     def __init__(self):
         super().__init__()
+        
 
 
 app = QApplication(sys.argv)
