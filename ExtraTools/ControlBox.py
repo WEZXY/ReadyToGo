@@ -3,18 +3,20 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout,
     QGridLayout, QLabel, QLineEdit, QPushButton
 )
+from PyQt5.QtCore import Qt
 from Slider import Slider
 
 
 class ControlBox(QWidget):
     """Secondary window with full interactive controls."""
 
-    def __init__(self, parent_callback, *argu):
-        super().__init__()
+    def __init__(self, parent=None, parent_callback=None, *argu):
+        super().__init__(parent)
         self.parent_callback = parent_callback  # Function reference to send data back
         self.setWindowTitle("Settings & Tools - Extra Window")
         self.setGeometry(200, 200, 350, 200)
         self.setObjectName("ControlBox")
+        self.setWindowFlags(Qt.Window)
 
         self.setStyleSheet(
             "QWidget#ControlBox{border-radius: 5px; margin: 5px; background-color: #222222;}"
@@ -25,7 +27,6 @@ class ControlBox(QWidget):
         )
 
         self.controlGlobals = argu
-        # self.labelsAndSliders = {}
 
         self.initUI()
 
@@ -53,7 +54,7 @@ class ControlBox(QWidget):
         self.parent_callback(slider_id, state)
 
 
-class MainWindow(QMainWindow):
+class ExampleWindow(QMainWindow):
     """Main Application Window."""
 
     def __init__(self):
@@ -91,18 +92,21 @@ class MainWindow(QMainWindow):
         """Instantiate and show the interactive extra window."""
         # Create window if it doesn't exist, passing self.update_status as callback
         if self.extra_window is None:
-            self.extra_window = ControlBox(self.update_status, "name", "var")
+            self.extra_window = ControlBox(self, self.update_status, "name", "var")
 
         self.extra_window.show()
         self.extra_window.activateWindow()  # Bring window to focus
 
     def update_status(self, new_text, state):
         """Receives data from the extra window and updates the UI."""
-        self.display_label.setText(f"Current Status: {new_text}")
+        if state:
+            self.display_label.setText(f"Current Status: {new_text}")
+        else:
+            self.display_label.setText(f"Current Status: None")
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MainWindow()
+    window = ExampleWindow()
     window.show()
     sys.exit(app.exec_())
